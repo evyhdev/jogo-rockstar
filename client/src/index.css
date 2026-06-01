@@ -296,6 +296,67 @@ button {
   background: rgba(127, 29, 29, 0.52);
 }
 
+.confirmation-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(2, 6, 23, 0.7);
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+  animation: overlay-in 180ms ease-out;
+}
+
+.confirmation-dialog {
+  width: min(100%, 24rem);
+  border: 1px solid rgba(250, 204, 21, 0.55);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, rgba(8, 29, 48, 0.98), rgba(7, 18, 31, 0.98));
+  padding: 1.15rem;
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.6);
+}
+
+.confirmation-dialog h2 {
+  margin-top: 0.45rem;
+  color: rgb(254 240 138);
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.confirmation-dialog > p:last-of-type {
+  margin-top: 0.55rem;
+  color: rgb(203 213 225);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.confirmation-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.confirmation-cancel,
+.confirmation-confirm {
+  border-radius: 0.7rem;
+  padding: 0.72rem;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.confirmation-cancel {
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(15, 23, 42, 0.72);
+  color: rgb(226 232 240);
+}
+
+.confirmation-confirm {
+  background: linear-gradient(135deg, rgb(250 204 21), rgb(217 119 6));
+  color: rgb(30 41 59);
+}
+
 .master-panel {
   margin-top: 1rem;
   padding: 1.25rem;

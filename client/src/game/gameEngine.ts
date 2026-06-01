@@ -60,6 +60,8 @@ export function submitAnswer(state: GameState, teamId: string, answerId: OptionI
   if (team.annulledOptionIds.includes(answerId)) throw new Error("Essa alternativa foi anulada pelo Tiro Preciso.");
   team.answerId = answerId;
   team.answerSubmittedAt = Date.now();
+  const activeTeams = getTeams(state).filter((entry) => !entry.eliminated);
+  if (activeTeams.length > 0 && activeTeams.every((entry) => entry.answerId)) showResult(state);
 }
 
 function getOutcome(question: Question, team: Team) {

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, Navigate, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { boardHouses, characters, getCharacter, getQuestion } from "./data/gameData";
 import {
@@ -14,9 +14,23 @@ const panel = "rounded-2xl border border-white/10 bg-slate-950/75 p-5 shadow-xl"
 const makeId = (prefix: string) => `${prefix}-${Math.random().toString(36).slice(2, 8)}`;
 const houseImagePath = (position: number) => `/assets/houses/${position}.webp`;
 const houseImagePaths = Array.from({ length: 10 }, (_, index) => houseImagePath(index + 1));
-const confirmAction = (message: string, action: () => void) => {
-  if (window.confirm(message)) action();
-};
+type ConfirmAction = (message: string, action: () => void) => void;
+const ConfirmationContext = createContext<ConfirmAction>(() => undefined);
+
+function ConfirmationProvider({ children }: { children: ReactNode }) {
+  const [confirmation, setConfirmation] = useState<{ message: string; action: () => void } | null>(null);
+  const requestConfirmation: ConfirmAction = (message, action) => setConfirmation({ message, action });
+  const confirm = () => {
+    const action = confirmation?.action;
+    setConfirmation(null);
+    action?.();
+  };
+  return <ConfirmationContext.Provider value={requestConfirmation}>{children}{confirmation ? <div className="confirmation-overlay" role="dialog" aria-modal="true" aria-labelledby="confirmation-title"><section className="confirmation-dialog"><p className="eyebrow">Confirmar ação</p><h2 id="confirmation-title">Tem certeza?</h2><p>{confirmation.message}</p><div className="confirmation-actions"><button type="button" className="confirmation-cancel" onClick={() => setConfirmation(null)}>Cancelar</button><button type="button" className="confirmation-confirm" onClick={confirm}>Confirmar</button></div></section></div> : null}</ConfirmationContext.Provider>;
+}
+
+function useConfirmation() {
+  return useContext(ConfirmationContext);
+}
 
 function usePreloadHouseImages() {
   useEffect(() => {
@@ -41,9 +55,8 @@ function useExitConfirmation(active = true) {
 
 function ExitGameButton() {
   const navigate = useNavigate();
-  const exit = () => {
-    if (window.confirm("Deseja realmente sair da partida?")) navigate("/");
-  };
+  const confirmAction = useConfirmation();
+  const exit = () => confirmAction("Deseja realmente sair da partida?", () => navigate("/"));
   return <button type="button" className="exit-game-button" onClick={exit}>Sair da partida</button>;
 }
 
@@ -191,6 +204,7 @@ function Podium({ game }: { game: GameState }) {
 function Master() {
   const { gameId } = useParams();
   const { game, loading } = useGame(gameId);
+  const confirmAction = useConfirmation();
   useExitConfirmation(Boolean(gameId));
   const seconds = useCountdown(game);
   const [error, setError] = useState<string | null>(null);
@@ -206,7 +220,7 @@ function Master() {
       const rolledTeam = getTeams(game).find((team) => team.selectionRoll !== null && previousRolls.current?.[team.id] !== team.selectionRoll);
       if (rolledTeam?.selectionRoll) {
         setDiceReveal({ leader: rolledTeam.leaderName, value: rolledTeam.selectionRoll });
-        const timeout = window.setTimeout(() => setDiceReveal(null), 1700);
+        const timeout = window.setTimeout(() => setDiceReveal(null), 5000);
         previousRolls.current = rolls;
         return () => window.clearTimeout(timeout);
       }
@@ -236,6 +250,7 @@ function Master() {
 }
 
 function PowerActions({ game, team, run }: { game: GameState; team: Team; run: (action: (draft: GameState) => void) => void }) {
+  const confirmAction = useConfirmation();
   const character = getCharacter(team.characterId), question = getQuestion(game.currentRound);
   const [selected, setSelected] = useState<OptionId[]>([]);
   if (!character || !question || !canUsePower(game, team)) return team.powerMessage ? <p className="mt-3 rounded-xl bg-cyan-500/10 p-3 text-sm text-cyan-200">{team.powerMessage}</p> : null;
@@ -250,6 +265,7 @@ function PowerActions({ game, team, run }: { game: GameState; team: Team; run: (
 function Player() {
   const { gameId, teamId } = useParams();
   const { game, loading } = useGame(gameId);
+  const confirmAction = useConfirmation();
   useExitConfirmation(Boolean(gameId));
   const seconds = useCountdown(game);
   const [error, setError] = useState<string | null>(null);
@@ -269,4 +285,4 @@ function Player() {
 
 function Ranking({ game }: { game: GameState }) { return <section className={panel}><h2 className="text-2xl font-bold">Ranking final</h2>{getRanking(game).map((team, index) => <p className="mt-3 rounded-xl bg-slate-900 p-4" key={team.id}><b>{index + 1}º {team.name}</b> · <Leak team={team} /> · {team.score} pontos</p>)}</section>; }
 function Centered({ text }: { text: string }) { return <main className="flex min-h-screen items-center justify-center p-4"><div className={panel}><p>{text}</p><Link className="mt-4 block text-cyan-300" to="/">Voltar</Link></div></main>; }
-export default function App() { usePreloadHouseImages(); return <Routes><Route path="/" element={<Home />} /><Route path="/mestre/:gameId" element={<Master />} /><Route path="/jogador/:gameId/:teamId" element={<Player />} /><Route path="*" element={<Navigate to="/" />} /></Routes>; }
+export default function App() { usePreloadHouseImages(); return <ConfirmationProvider><Routes><Route path="/" element={<Home />} /><Route path="/mestre/:gameId" element={<Master />} /><Route path="/jogador/:gameId/:teamId" element={<Player />} /><Route path="*" element={<Navigate to="/" />} /></Routes></ConfirmationProvider>; }
