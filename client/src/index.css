@@ -747,39 +747,24 @@ button {
   top: 50%;
   left: 50%;
   z-index: 1;
-  display: grid;
   width: 13rem;
   height: 13rem;
-  place-content: center;
-  border: 2px solid rgba(250, 204, 21, 0.68);
   border-radius: 999px;
-  background: radial-gradient(circle, rgba(120, 53, 15, 0.9), rgba(7, 18, 31, 0.92));
-  color: rgb(254 240 138);
-  text-align: center;
-  text-shadow: 0 2px 6px black;
-  box-shadow: 0 0 0 0.5rem rgba(120, 53, 15, 0.25), 0 0 3rem rgba(250, 204, 21, 0.25);
   transform: translate(-50%, -50%);
 }
 
-.board-center p,
-.board-center span {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-}
-
-.board-center b {
-  margin: 0.25rem 0;
-  font-size: 1.7rem;
-  text-transform: uppercase;
+.board-center img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 1.5rem rgba(250, 204, 21, 0.3));
 }
 
 .board-house {
   position: absolute;
   z-index: 2;
-  width: clamp(9rem, 10vw, 12rem);
-  height: clamp(11rem, 12vw, 15rem);
+  width: clamp(calc(9rem - 35px), calc(10vw - 35px), calc(12rem - 35px));
+  height: clamp(calc(11rem - 35px), calc(12vw - 35px), calc(15rem - 35px));
   border: 0;
   background: transparent;
   padding: 0;
@@ -1043,7 +1028,7 @@ button {
     top: auto;
     left: auto;
     width: auto;
-    height: 16.5rem;
+    height: calc(16.5rem - 35px);
     transform: none;
   }
   .board-house.is-active { transform: scale(1.035); }

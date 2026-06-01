@@ -137,7 +137,7 @@ function Board({ game, moving = false, onRevealQuestion }: { game: GameState; mo
     const y = 50 + Math.sin(radians) * 34;
     return { x, y };
   });
-  return <div className="board-shell"><div className="board-route"><svg className="board-track" viewBox="0 0 100 100" aria-hidden="true"><circle className="board-track-base" cx="50" cy="50" r="34" /></svg><div className="board-center"><p>Operação</p><b>Rockstar</b><span>Protocolo Seguro</span></div>{boardHouses.map((house, index) => {
+  return <div className="board-shell"><div className="board-route"><svg className="board-track" viewBox="0 0 100 100" aria-hidden="true"><circle className="board-track-base" cx="50" cy="50" r="34" /></svg><div className="board-center"><img src="/assets/houses/11.webp" alt="Rockstar" decoding="async" /></div>{boardHouses.map((house, index) => {
     const position = index + 1, active = position === activePosition, canReveal = active && game.roundStage === "waiting" && Boolean(onRevealQuestion);
     return <button type="button" key={house} style={{ left: `${orbit[index].x}%`, top: `${orbit[index].y}%` }} className={`board-house ${active ? "is-active" : ""} ${canReveal ? "is-clickable" : ""} ${moving && active ? "is-departing" : ""}`} disabled={!canReveal} onClick={onRevealQuestion} aria-label={canReveal ? `Abrir pergunta da casa ${house}` : house}>
       <img src={houseImagePath(position)} alt="" decoding="async" />
