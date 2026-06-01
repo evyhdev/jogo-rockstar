@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "games": {
+      "$gameId": {
+        ".read": true,
+        ".write": true,
+        ".validate": "newData.hasChildren(['id', 'createdAt', 'phase', 'roundStage', 'currentRound'])"
+      }
+    }
+  }
+}

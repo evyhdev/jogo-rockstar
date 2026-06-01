@@ -1,15 +1,11 @@
 {
   "name": "operacao-rockstar",
   "private": true,
-  "workspaces": [
-    "client",
-    "server"
-  ],
+  "workspaces": ["client"],
   "scripts": {
-    "dev": "concurrently \"npm --workspace server run dev\" \"npm --workspace client run dev\"",
-    "install-all": "npm install --workspaces"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.0"
+    "dev": "npm --workspace client run dev",
+    "dev:host": "npm --workspace client run dev:host",
+    "build": "npm --workspace client run build",
+    "preview": "npm --workspace client run preview"
   }
 }

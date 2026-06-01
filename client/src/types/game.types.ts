@@ -1,108 +1,92 @@
-export type GameStatus = "waiting" | "question" | "result" | "finished";
-export type OptionColor = "Vermelho" | "Azul" | "Verde" | "Amarelo";
+export type GamePhase = "lobby" | "character-selection" | "playing" | "finished";
+export type RoundStage = "waiting" | "question" | "result";
+export type OptionId = "A" | "B" | "C" | "D" | "E";
+export type AnswerQuality = 100 | 70 | 50 | 0;
+export type PowerTiming = "before-answer" | "after-result";
+export type PowerEffect = "bonus-question" | "hint" | "inspect-option" | "fortify" | "halve-leak" | "annul-zero-options";
 
 export interface QuestionOption {
-  id: "A" | "B" | "C" | "D" | "E";
+  id: OptionId;
   text: string;
-  points: number;
-  color: OptionColor;
+  quality: AnswerQuality;
   justification: string;
+}
+
+export interface BonusQuestion {
+  statement: string;
+  options: Array<{ id: "A" | "B"; text: string }>;
+  correctOptionId: "A" | "B";
+  explanation: string;
 }
 
 export interface Question {
   id: string;
-  round: number;
+  boardPosition: number;
   difficulty: string;
-  theme: string;
   house: string;
+  theme: string;
   statement: string;
   options: QuestionOption[];
-  bestOptionId: "A" | "B" | "C" | "D" | "E";
+  correctOptionId: OptionId;
+  explanation: string;
+  hint: string;
+  bonusQuestion?: BonusQuestion;
+  finalChallenge?: boolean;
 }
 
 export interface Character {
   id: string;
   name: string;
-  className: string;
-  description: string;
-  visualStyle: string;
-  advantageHouseIds: string[];
-  advantageBonus: number;
-  cardId: string;
+  emoji: string;
+  specialty: string;
+  advantageQuestionIds: string[];
+  powerName: string;
+  powerDescription: string;
+  powerTiming: PowerTiming;
+  powerEffect: PowerEffect;
 }
 
-export interface Card {
-  id: string;
-  name: string;
-  description: string;
-  effect: string;
-  used: boolean;
+export interface RoundResult {
+  answerId: OptionId | null;
+  quality: AnswerQuality | null;
+  scoreGained: number;
+  leakBeforePower: number;
+  leakGained: number;
+  specialtyBonus: boolean;
+  unanswered: boolean;
+  responseTimeMs: number | null;
+  powerMessage?: string;
 }
 
-export interface TeamState {
+export interface Team {
   id: string;
   name: string;
-  characterId: string;
-  cardId: string;
+  leaderName: string;
+  slotIndex: number;
+  selectionRoll: number | null;
+  characterId: string | null;
   score: number;
-  confidence: number;
-  hasAnswered: boolean;
-  selectedOptionId: "A" | "B" | "C" | "D" | "E" | null;
-  cardUsed: boolean;
-  currentCardRoll: number | null;
-  currentCardSuccess: boolean | null;
-  stats: {
-    green: number;
-    blue: number;
-    yellow: number;
-    red: number;
-    unanswered: number;
-  };
-  slotIndex?: number;
-  socketId?: string;
-}
-
-export interface CharacterSelectionState {
-  currentSlotIndex: number;
-  selectedCharacters: Record<number, string>;
-  availableCharacters: Character[];
-}
-
-export interface RoundResultTeam {
-  teamId: string;
-  selectedOptionId: "A" | "B" | "C" | "D" | "E" | null;
-  optionColor: OptionColor | null;
-  justification: string | null;
-  basePoints: number;
-  hasAdvantage: boolean;
-  advantageBonus: number;
-  roundScore: number;
-  confidenceLoss: number;
-  leakIncreaseBeforeCard: number;
-  cardRoll: number | null;
-  cardSuccess: boolean | null;
-  leakReductionByCard: number;
-  finalLeakIncrease: number;
+  leakLevel: number;
+  leakExplosions: number;
+  answerId: OptionId | null;
+  answerSubmittedAt: number | null;
+  powerUsed: boolean;
+  powerMessage: string | null;
+  futureLeakReduction: number;
+  annulledOptionIds: OptionId[];
+  results: Record<string, RoundResult>;
 }
 
 export interface GameState {
-  status: GameStatus;
-  round: number;
-  currentQuestionId: string;
-  leakLevel: number;
-  timer: {
-    duration: number;
-    remaining: number;
-    isRunning: boolean;
-  };
-  questionLocked: boolean;
-  questions: Question[];
-  characters: Character[];
-  cards: Card[];
-  teams: TeamState[];
-  roundResults: RoundResultTeam[];
-  finalRanking: TeamState[];
-  characterSelection?: CharacterSelectionState;
-  filledSlots?: number;
-  finalMessage: string | null;
+  id: string;
+  createdAt: number;
+  phase: GamePhase;
+  roundStage: RoundStage;
+  currentRound: number;
+  questionStartedAt: number | null;
+  selectionOrder: string[];
+  currentSelectionIndex: number;
+  teams: Record<string, Team>;
 }
+
+export type PowerPayload = { optionId?: OptionId; optionIds?: OptionId[]; bonusAnswerId?: "A" | "B" } | undefined;

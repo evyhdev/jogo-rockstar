@@ -1,122 +1,73 @@
 # Operação Rockstar: Protocolo Seguro
 
-Aplicação MVP de um jogo educacional em tempo real para sala de aula.
+Website Vite para conduzir em sala de aula o jogo educacional definido no documento
+`Operação Rockstar: Protocolo Seguro`.
 
-## Objetivo
+O projeto não possui servidor Node próprio. A interface React pode ser hospedada como
+site estático, enquanto o estado compartilhado das partidas fica no Firebase Realtime
+Database.
 
-Criar um jogo onde o datashow exibe o tabuleiro, pergunta atual, alternativas, cronômetro, equipes, pontuação, confiança, medidor de vazamento e resultado. Cada líder responde no celular por uma rota própria.
+Documentos do projeto:
 
-## Stack usada
+- [`docs/ARQUITETURA.md`](docs/ARQUITETURA.md): arquitetura técnica e modelo de dados.
+- [`docs/SPECS.md`](docs/SPECS.md): escopo, regras e requisitos.
+- [`docs/DOCUMENTACAO.md`](docs/DOCUMENTACAO.md): instalação, uso e hospedagem.
+- [`docs/FUNCIONAMENTO_ATUAL_DO_JOGO.md`](docs/FUNCIONAMENTO_ATUAL_DO_JOGO.md): regras atuais editáveis para revisão.
 
-- Frontend: React, Vite, TypeScript, React Router, Tailwind CSS, Socket.IO Client
-- Backend: Node.js, Express, Socket.IO, TypeScript
-- Dados em arquivos JSON, sem banco de dados
+## Fluxo da partida
 
-## Instalação
+1. O mediador abre a página inicial no computador e cria uma sala.
+2. A tela exibe um código de cinco caracteres.
+3. Cinco líderes acessam a mesma página pelo celular, informam o código e entram.
+4. Cada líder joga o dado. O site ordena a escolha de personagens pelo resultado.
+5. Os líderes escolhem cinco dos seis personagens disponíveis.
+6. O mediador lança cada pergunta, controla os 60 segundos e revela o resultado.
+7. Cada líder responde pelo celular e usa seu poder especial no momento permitido.
+8. Após a casa `Cerco ao GTA VI`, o ranking final é exibido.
 
-No diretório raiz do projeto:
+## Regras implementadas
+
+- 5 guildas e 6 personagens: Mago, Bruxo, Elfo, Anão, Guerreiro e Arqueiro.
+- 10 casas: início, 8 desafios e encerramento.
+- Alternativas possuem qualidade: `100%`, `70%`, `50%` ou `0%`.
+- Pontos e vazamento variam conforme qualidade, casa e especialidade.
+- Cada guilda possui vazamento acumulado em porcentagem.
+- Ao atingir `100%`, ocorre uma Explosão de Vazamento e o excedente permanece.
+- Poderes são únicos e contextuais para cada personagem.
+
+## Executar localmente
 
 ```bash
 npm install
-```
-
-Isso instalará dependências nos pacotes `client` e `server`.
-
-## Como rodar
-
-No diretório raiz:
-
-```bash
 npm run dev
 ```
 
-Isso iniciará o backend em `http://localhost:4000` e o frontend em `http://localhost:5173`.
+Sem configuração adicional, o modo local permite testar a sincronização abrindo
+várias abas no mesmo navegador.
 
-### Tornar o frontend acessível na rede local (testar no celular)
+## Sincronizar celulares com Firebase
 
-No diretório `client` você pode iniciar o Vite com `--host` para expor o servidor na rede local:
+1. Crie um projeto no [Firebase](https://console.firebase.google.com/).
+2. Crie um `Realtime Database`.
+3. Publique as regras de `firebase-database.rules.json`.
+4. Crie `client/.env` a partir de `client/.env.example`.
+5. Preencha `VITE_FIREBASE_DATABASE_URL` com a URL exibida no Firebase.
+6. Gere a versão de produção com `npm run build`.
+
+As regras incluídas são adequadas para uma demonstração em sala: salas possuem códigos
+aleatórios e leitura/escrita pública. Antes de publicar para uso aberto na internet,
+adicione autenticação e regras restritas por usuário.
+
+## Hospedagem
+
+A saída estática é criada em `client/dist`. Configure sua hospedagem para executar:
 
 ```bash
-cd /home/evy/Documentos/jogo/operacao-rockstar/client
-npm run dev:host
+npm run build
 ```
 
-Em seguida, descubra o IP da máquina (por exemplo `192.168.0.10`) e abra no celular:
+e publicar:
 
-- `http://192.168.0.10:5173/datashow`
-- `http://192.168.0.10:5173/lider/equipe-1`
-
-Se o frontend não conseguir alcançar o backend a partir do celular, crie um arquivo `.env` dentro de `client/` com o conteúdo:
-
+```text
+client/dist
 ```
-VITE_BACKEND_URL=http://<IP-da-máquina>:4000
-```
-
-e reinicie o Vite.
-
-## Rotas disponíveis
-
-- `http://localhost:5173/datashow` - tela principal projetada
-- `http://localhost:5173/lider/equipe-1`
-- `http://localhost:5173/lider/equipe-2`
-- `http://localhost:5173/lider/equipe-3`
-- `http://localhost:5173/lider/equipe-4`
-- `http://localhost:5173/lider/equipe-5`
-
-## Como cada líder acessa
-
-Cada líder acessa sua rota com o `teamId`:
-
-- `equipe-1`
-- `equipe-2`
-- `equipe-3`
-- `equipe-4`
-- `equipe-5`
-
-## Como funciona a rodada
-
-1. No datashow, clique em `Iniciar jogo` para resetar o estado.
-2. Clique em `Iniciar rodada` para abrir a pergunta atual.
-3. Os líderes respondem no celular e podem usar a carta uma vez.
-4. Clique em `Mostrar resultado` no datashow para calcular pontos, confiança e vazamento.
-5. Clique em `Próxima rodada` para avançar.
-
-## Pontuação
-
-- Verde: +5 pontos
-- Azul: +3 pontos
-- Amarelo: +1 ponto
-- Vermelho: +0 pontos
-
-## Confiança
-
-- Começa em 100 para cada equipe
-- Verde: -0
-- Azul: -5
-- Amarelo: -10
-- Vermelho: -20
-- Sem resposta: -15
-
-## Medidor de vazamento
-
-- Começa em 0 e vai até 100
-- Verde: +0
-- Azul: +3
-- Amarelo: +6
-- Vermelho: +10
-- Sem resposta: +8
-- Carta bem-sucedida reduz 10 do vazamento desta rodada
-
-## Cartas
-
-Cada equipe tem uma carta única que pode ser usada uma vez por jogo. Ao usar a carta, o backend rola um dado de 1 a 6:
-
-- número par = sucesso
-- número ímpar = falha
-
-Se a carta for bem-sucedida, ela reduz em 10 o vazamento causado pela equipe na rodada.
-
-## Observações
-
-O arquivo `server/src/data/questions.json` contém a estrutura e as perguntas baseadas nos temas do PDF. Caso a versão final do PDF esteja disponível, os textos das perguntas e alternativas devem ser atualizados com o conteúdo oficial.
-# jogo-rockstar
