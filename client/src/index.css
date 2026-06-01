@@ -267,6 +267,35 @@ button {
   border-radius: 1.2rem;
 }
 
+.master-header-actions,
+.player-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.player-header-actions {
+  justify-content: space-between;
+}
+
+.exit-game-button {
+  border: 1px solid rgba(248, 113, 113, 0.48);
+  border-radius: 0.7rem;
+  background: rgba(127, 29, 29, 0.24);
+  padding: 0.65rem 0.8rem;
+  color: rgb(254 202 202);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 180ms ease, border-color 180ms ease;
+}
+
+.exit-game-button:hover {
+  border-color: rgba(248, 113, 113, 0.88);
+  background: rgba(127, 29, 29, 0.52);
+}
+
 .master-panel {
   margin-top: 1rem;
   padding: 1.25rem;
@@ -482,9 +511,10 @@ button {
 
 .master-game-layout {
   display: grid;
-  grid-template-columns: clamp(17rem, 19vw, 22rem) minmax(0, 1fr) clamp(17rem, 19vw, 22rem);
+  grid-template-columns: 19rem 64rem 19rem;
   gap: 1rem;
   align-items: start;
+  justify-content: center;
 }
 
 .guild-sidebar {
@@ -915,7 +945,7 @@ button {
   to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1700px) {
   .master-game-layout {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -931,7 +961,9 @@ button {
 
 @media (max-width: 640px) {
   .master-content { width: min(100% - 1rem, 92rem); }
-  .master-header { align-items: start; }
+  .master-header,
+  .master-header-actions { align-items: start; }
+  .master-header-actions { flex-direction: column; }
   .room-code { min-width: 7rem; padding: 0.55rem; }
   .room-code b { font-size: 1.2rem; }
   .master-game-layout { grid-template-columns: 1fr; }
