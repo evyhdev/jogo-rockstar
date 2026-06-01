@@ -192,8 +192,8 @@ function HeroGallery({ game }: { game: GameState }) {
 
 const diceFaces = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
 
-function DiceReveal({ leader, value }: { leader: string; value: number }) {
-  return <div className="game-overlay"><div className="dice-reveal"><p className="eyebrow">O destino foi lançado</p><div className="rolling-die">{diceFaces[value]}</div><p className="mt-4 text-xl font-bold text-amber-100">{leader}</p><p className="mt-1 text-sm uppercase tracking-[0.3em] text-cyan-200">resultado: {value}</p></div></div>;
+function DiceReveal({ leader, value, onClose }: { leader: string; value: number; onClose: () => void }) {
+  return <div className="game-overlay" onClick={onClose}><div className="dice-reveal" onClick={(event) => event.stopPropagation()}><p className="eyebrow">O destino foi lançado</p><div className="rolling-die">{diceFaces[value]}</div><p className="mt-4 text-xl font-bold text-amber-100">{leader}</p><p className="mt-1 text-sm uppercase tracking-[0.3em] text-cyan-200">resultado: {value}</p></div></div>;
 }
 
 function Podium({ game }: { game: GameState }) {
@@ -220,13 +220,16 @@ function Master() {
       const rolledTeam = getTeams(game).find((team) => team.selectionRoll !== null && previousRolls.current?.[team.id] !== team.selectionRoll);
       if (rolledTeam?.selectionRoll) {
         setDiceReveal({ leader: rolledTeam.leaderName, value: rolledTeam.selectionRoll });
-        const timeout = window.setTimeout(() => setDiceReveal(null), 5000);
         previousRolls.current = rolls;
-        return () => window.clearTimeout(timeout);
       }
     }
     previousRolls.current = rolls;
   }, [game]);
+  useEffect(() => {
+    if (!diceReveal) return;
+    const timeout = window.setTimeout(() => setDiceReveal(null), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [diceReveal]);
   const advance = () => {
     if (moving) return;
     setMoving(true);
@@ -241,7 +244,7 @@ function Master() {
   const teams = getTeams(game), selectionTeams = getSelectionTeams(game), question = getQuestion(game.currentRound);
   const overlayView = game.roundStage === "waiting" ? (roundOverlay?.round === game.currentRound ? roundOverlay.view : null) : "question";
   return <main className="master-screen"><div className="master-content"><header className="master-header"><div><p className="eyebrow">Painel do mestre</p><h1 className="mt-1 text-3xl font-black text-amber-100">Operação Rockstar</h1><p className="text-sm text-slate-300">Protocolo Seguro</p></div><div className="master-header-actions"><div className="room-code"><p>SALA DA OPERAÇÃO</p><b>{game.id}</b></div><ExitGameButton /></div></header><ErrorMessage message={error} />
-    {diceReveal ? <DiceReveal leader={diceReveal.leader} value={diceReveal.value} /> : null}
+    {diceReveal ? <DiceReveal leader={diceReveal.leader} value={diceReveal.value} onClose={() => setDiceReveal(null)} /> : null}
     {game.phase === "lobby" ? <section className="master-panel"><p className="eyebrow">Convocação das guildas</p><h2 className="mt-2 text-3xl font-black text-amber-100">Preparação: {teams.length}/5</h2><p className="mt-2 text-slate-300">Compartilhe o código da sala. Cada líder deve entrar pelo celular e lançar seu dado.</p><div className="mt-6"><TeamGrid game={game} /></div><button className="master-button mt-6" disabled={teams.length !== 5 || teams.some((team) => team.selectionRoll === null)} onClick={() => confirmAction("Iniciar a escolha dos personagens?", () => void run(startCharacterSelection))}>Iniciar escolha dos personagens</button></section> : null}
     {game.phase === "character-selection" ? <section className="master-panel"><p className="eyebrow">Ordem definida pelo destino</p><h2 className="mt-2 text-3xl font-black text-amber-100">Escolha dos personagens</h2><p className="mt-2 text-slate-200">Agora é a vez de <b className="text-amber-300">{selectionTeams[game.currentSelectionIndex]?.leaderName}</b>. As habilidades estão exibidas no telão para apoiar a decisão.</p><div className="mt-6 grid gap-3 sm:grid-cols-5">{selectionTeams.map((team, index) => <div className={`selection-card ${index === game.currentSelectionIndex ? "is-current" : ""}`} key={team.id}><p className="text-xs uppercase tracking-widest text-cyan-200">{index + 1}º · dado {team.selectionRoll}</p><p className="mt-2 font-bold">{team.leaderName}</p><p className="mt-1 text-sm text-amber-300">{getCharacter(team.characterId)?.name ?? "Aguardando escolha"}</p></div>)}</div><HeroGallery game={game} /></section> : null}
     {(game.phase === "playing" || game.phase === "finished") ? <>{game.phase === "finished" ? <Podium game={game} /> : <div className="master-game-layout"><GuildSidebar game={game} side="left" /><section className="master-panel board-panel"><div className="mb-4 flex items-end justify-between gap-4"><div><p className="eyebrow">Mapa do reino</p><h2 className="mt-1 text-2xl font-black text-amber-100">Trilha da operação</h2><p className="mt-1 text-sm text-slate-300">{game.roundStage === "waiting" && !overlayView ? "Clique na casa destacada para abrir a pergunta." : "A casa atual está em andamento."}</p></div><p className="text-sm text-slate-300">Casa {question?.boardPosition} de 10</p></div><div className="board-stage"><Board game={game} moving={moving} onRevealQuestion={() => setRoundOverlay({ round: game.currentRound, view: "house" })} />{overlayView === "house" ? <div className="board-overlay"><div className="house-reveal"><img src={houseImagePath(question?.boardPosition ?? 1)} alt={question?.house} decoding="async" /><p className="eyebrow mt-2">Casa {question?.boardPosition}</p><h2 className="mt-2 text-4xl font-black text-amber-100">{question?.house}</h2><button className="master-button mt-6" onClick={() => setRoundOverlay({ round: game.currentRound, view: "question" })}>Continuar</button></div></div> : null}{overlayView === "question" ? <div className="board-overlay question-overlay"><div className="question-overlay-content"><p className="eyebrow">{question?.difficulty} · {question?.theme}</p><h2 className="mt-2 text-3xl font-black text-amber-100">{question?.house}</h2><p className="mt-4 text-lg leading-8 text-slate-100">{question?.statement}</p><div className="mt-5 grid gap-2">{question?.options.map((option) => <div className={`question-option ${game.roundStage === "result" ? getAnswerQualityClass(option.quality) : ""}`} key={option.id}><b>{option.id})</b> {option.text}{game.roundStage === "result" ? <p className="mt-1 text-xs">Qualidade: {option.quality}%</p> : null}</div>)}</div>{game.roundStage === "result" ? <p className="result-callout"><b>Resposta ideal: {question?.correctOptionId}.</b> {question?.explanation}</p> : null}<div className="question-controls"><p className="text-xs uppercase tracking-widest text-cyan-200">Tempo da rodada</p><p className="mt-1 text-5xl font-black text-amber-300">{game.roundStage === "question" ? seconds : ROUND_SECONDS}<span className="text-xl">s</span></p><button className="master-button mt-4 w-full" disabled={game.roundStage !== "waiting"} onClick={() => confirmAction("Iniciar o cronômetro desta rodada?", () => void run(startRound))}>Iniciar cronômetro</button><button className="master-button secondary mt-3 w-full" disabled={game.roundStage !== "question"} onClick={() => confirmAction("Encerrar as respostas e mostrar os resultados?", () => void run(showResult))}>Mostrar resultados</button><button className="master-button accent mt-3 w-full" disabled={game.roundStage !== "result" || moving} onClick={() => confirmAction("Avançar para a próxima casa?", advance)}>{moving ? "Avançando..." : "Próxima casa"}</button></div></div></div> : null}</div></section><GuildSidebar game={game} side="right" /></div>}</> : null}
