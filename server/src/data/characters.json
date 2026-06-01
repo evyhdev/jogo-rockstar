@@ -1,0 +1,52 @@
+[
+  {
+    "id": "mago",
+    "name": "Mago Arcano",
+    "className": "Especialista em Segurança Digital",
+    "description": "Um conjurador estratégico que domina barreiras digitais, firewalls mágicos e restauração de serviços críticos.",
+    "visualStyle": "Mago medieval sombrio com robes azul-escuros, detalhes dourados e energia arcana nas mãos.",
+    "advantageHouseIds": ["q1", "q4"],
+    "advantageBonus": 2,
+    "cardId": "firewall-arcano"
+  },
+  {
+    "id": "guerreira",
+    "name": "Guerreira da Criptografia",
+    "className": "Defensora dos Dados",
+    "description": "Uma guerreira disciplinada que protege informações sigilosas usando criptografia, contenção e controle de acesso.",
+    "visualStyle": "Guerreira realista com armadura escura, detalhes em prata e escudo com símbolo de cadeado.",
+    "advantageHouseIds": ["q3", "q7"],
+    "advantageBonus": 2,
+    "cardId": "escudo-de-contencao"
+  },
+  {
+    "id": "elfo",
+    "name": "Elfo Sentinela dos Logs",
+    "className": "Auditor e Rastreador",
+    "description": "Um sentinela atento capaz de detectar acessos suspeitos, rastrear evidências e interpretar sinais escondidos nos logs.",
+    "visualStyle": "Elfo arqueiro com capa verde-escura, olhos brilhantes e pergaminhos de auditoria presos ao cinto.",
+    "advantageHouseIds": ["q6", "q7"],
+    "advantageBonus": 2,
+    "cardId": "olho-da-auditoria"
+  },
+  {
+    "id": "anao",
+    "name": "Anão Guardião do SLA",
+    "className": "Guardião dos Acordos",
+    "description": "Um guardião metódico que controla prazos, prioridades, impacto nos serviços e acordos de nível de serviço.",
+    "visualStyle": "Anão robusto com armadura de bronze, martelo rúnico e relógio mágico preso ao peitoral.",
+    "advantageHouseIds": ["q2", "q4"],
+    "advantageBonus": 2,
+    "cardId": "relogio-do-sla"
+  },
+  {
+    "id": "bruxo",
+    "name": "Bruxo dos Riscos",
+    "className": "Analista de Ameaças",
+    "description": "Um estrategista sombrio que enxerga ameaças futuras, calcula impactos e ajuda o reino a priorizar decisões críticas.",
+    "visualStyle": "Bruxo sombrio com manto roxo, mapa mágico flutuante e símbolos de risco ao redor.",
+    "advantageHouseIds": ["q5", "q8"],
+    "advantageBonus": 2,
+    "cardId": "mapa-dos-riscos"
+  }
+]

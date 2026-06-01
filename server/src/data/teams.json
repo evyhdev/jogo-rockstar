@@ -1,0 +1,32 @@
+[
+  {
+    "id": "equipe-1",
+    "name": "Guilda Arcana",
+    "characterId": "mago",
+    "cardId": "firewall-arcano"
+  },
+  {
+    "id": "equipe-2",
+    "name": "Ordem da Criptografia",
+    "characterId": "guerreira",
+    "cardId": "escudo-de-contencao"
+  },
+  {
+    "id": "equipe-3",
+    "name": "Sentinelas do Log",
+    "characterId": "elfo",
+    "cardId": "olho-da-auditoria"
+  },
+  {
+    "id": "equipe-4",
+    "name": "Clã do SLA",
+    "characterId": "anao",
+    "cardId": "relogio-do-sla"
+  },
+  {
+    "id": "equipe-5",
+    "name": "Bruxos do Risco",
+    "characterId": "bruxo",
+    "cardId": "mapa-dos-riscos"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "firewall-arcano",
+    "name": "Firewall Arcano",
+    "description": "Cria uma barreira mágica para conter falhas e reduzir o avanço do vazamento.",
+    "effect": "Se o dado for par, reduz em 10 o vazamento causado pela equipe na rodada atual.",
+    "used": false
+  },
+  {
+    "id": "escudo-de-contencao",
+    "name": "Escudo de Contenção",
+    "description": "Bloqueia temporariamente a propagação de uma ameaça crítica.",
+    "effect": "Se o dado for par, reduz em 10 o vazamento causado pela equipe na rodada atual.",
+    "used": false
+  },
+  {
+    "id": "olho-da-auditoria",
+    "name": "Olho da Auditoria",
+    "description": "Revela sinais ocultos nos registros e ajuda a conter danos operacionais.",
+    "effect": "Se o dado for par, reduz em 10 o vazamento causado pela equipe na rodada atual.",
+    "used": false
+  },
+  {
+    "id": "relogio-do-sla",
+    "name": "Relógio do SLA",
+    "description": "Diminui o impacto de uma decisão ruim ao acelerar a resposta da equipe.",
+    "effect": "Se o dado for par, reduz em 10 o vazamento causado pela equipe na rodada atual.",
+    "used": false
+  },
+  {
+    "id": "mapa-dos-riscos",
+    "name": "Mapa dos Riscos",
+    "description": "Antecipa ameaças e reduz o impacto de um risco mal controlado.",
+    "effect": "Se o dado for par, reduz em 10 o vazamento causado pela equipe na rodada atual.",
+    "used": false
+  }
+]
