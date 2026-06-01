@@ -8,7 +8,7 @@ export function createGame(gameId: string): GameState {
 }
 
 export function createTeam(id: string, leaderName: string, slotIndex: number): Team {
-  return { id, name: `Guilda ${slotIndex + 1}`, leaderName, slotIndex, selectionRoll: null, characterId: null, score: 0, leakLevel: 0, leakExplosions: 0, answerId: null, answerSubmittedAt: null, powerUsed: false, powerMessage: null, futureLeakReduction: 0, annulledOptionIds: [], results: {} };
+  return { id, name: `Guilda ${slotIndex + 1}`, leaderName, slotIndex, selectionRoll: null, characterId: null, score: 0, leakLevel: 0, leakExplosions: 0, eliminated: false, answerId: null, answerSubmittedAt: null, powerUsed: false, powerMessage: null, futureLeakReduction: 0, annulledOptionIds: [], results: {} };
 }
 
 export function getTeams(state: GameState) {
@@ -54,6 +54,7 @@ export function startRound(state: GameState) {
 export function submitAnswer(state: GameState, teamId: string, answerId: OptionId) {
   const team = state.teams[teamId];
   if (!team || state.phase !== "playing" || state.roundStage !== "question") throw new Error("Não há pergunta ativa.");
+  if (team.eliminated) throw new Error("Sua guilda foi eliminada por atingir 100% de vazamento.");
   if (!state.questionStartedAt || Date.now() - state.questionStartedAt >= ROUND_SECONDS * 1000) throw new Error("O tempo da rodada acabou.");
   if (team.answerId) throw new Error("Sua resposta já foi registrada.");
   if (team.annulledOptionIds.includes(answerId)) throw new Error("Essa alternativa foi anulada pelo Tiro Preciso.");
@@ -79,26 +80,30 @@ function getOutcome(question: Question, team: Team) {
 }
 
 function addLeak(team: Team, amount: number) {
-  if (amount <= 0) return 0;
+  if (amount <= 0 || team.eliminated) return 0;
   const reducedAmount = Math.max(0, amount - team.futureLeakReduction);
   team.futureLeakReduction = 0;
   if (reducedAmount <= 0) return 0;
   const total = team.leakLevel + reducedAmount;
-  team.leakExplosions += Math.floor(total / 100);
-  team.leakLevel = total % 100;
+  team.leakLevel = Math.min(100, total);
+  if (total >= 100) {
+    team.eliminated = true;
+    team.leakExplosions = 1;
+  }
   return reducedAmount;
 }
 
 function removeLeak(team: Team, amount: number) {
+  if (team.eliminated) return;
   const total = Math.max(0, getFinalLeak(team) - amount);
-  team.leakExplosions = Math.floor(total / 100);
-  team.leakLevel = total % 100;
+  team.leakLevel = total;
 }
 
 export function showResult(state: GameState) {
   const question = getQuestion(state.currentRound);
   if (!question || state.roundStage !== "question") throw new Error("Não há rodada ativa.");
   for (const team of getTeams(state)) {
+    if (team.eliminated) continue;
     const outcome = getOutcome(question, team);
     const leakGained = addLeak(team, outcome.leak);
     const responseTimeMs = team.answerSubmittedAt && state.questionStartedAt ? team.answerSubmittedAt - state.questionStartedAt : null;
@@ -123,6 +128,7 @@ export function canUsePower(state: GameState, team: Team) {
   const character = getCharacter(team.characterId);
   const question = getQuestion(state.currentRound);
   if (!character || !question || team.powerUsed || state.phase !== "playing") return false;
+  if (team.eliminated) return false;
   if (character.powerTiming === "before-answer") {
     const compatible = character.id === "bruxo" || character.advantageQuestionIds.includes(question.id);
     return compatible && state.roundStage === "question" && !team.answerId;
@@ -185,7 +191,7 @@ export function usePower(state: GameState, teamId: string, payload?: PowerPayloa
 }
 
 export function getFinalLeak(team: Team) {
-  return team.leakExplosions * 100 + team.leakLevel;
+  return team.leakLevel;
 }
 
 function countIdeal(team: Team) {

@@ -166,6 +166,7 @@ interface Team {
   score: number;
   leakLevel: number;
   leakExplosions: number;
+  eliminated: boolean;
   answerId: "A" | "B" | "C" | "D" | "E" | null;
   answerSubmittedAt: number | null;
   powerUsed: boolean;

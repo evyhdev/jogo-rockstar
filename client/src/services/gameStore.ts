@@ -25,10 +25,13 @@ async function getRemote(gameId: string) {
 function normalizeGame(state: GameState): GameState {
   const defaults = createGame(state.id);
   const teams = Object.fromEntries(
-    Object.entries(state.teams ?? {}).map(([teamId, team]) => [
-      teamId,
-      { ...createTeam(teamId, team.leaderName, team.slotIndex), ...team, results: team.results ?? {} },
-    ])
+    Object.entries(state.teams ?? {}).map(([teamId, team]) => {
+      const eliminated = team.eliminated ?? (team.leakExplosions > 0 || team.leakLevel >= 100);
+      return [
+        teamId,
+        { ...createTeam(teamId, team.leaderName, team.slotIndex), ...team, leakLevel: eliminated ? 100 : team.leakLevel, eliminated, results: team.results ?? {} },
+      ];
+    })
   );
   return {
     ...defaults,

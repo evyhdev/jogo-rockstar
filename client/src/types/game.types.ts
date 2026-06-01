@@ -68,6 +68,7 @@ export interface Team {
   score: number;
   leakLevel: number;
   leakExplosions: number;
+  eliminated: boolean;
   answerId: OptionId | null;
   answerSubmittedAt: number | null;
   powerUsed: boolean;

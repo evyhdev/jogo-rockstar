@@ -239,10 +239,10 @@ Cada guilda possui um Medidor de Vazamento individual, representado em porcentag
 | 25% a 49% | Alerta                |
 | 50% a 74% | Perigo                |
 | 75% a 99% | Crítico               |
-| 100%      | Explosão de Vazamento |
+| 100%      | Game Over             |
 
-Quando uma guilda atinge ou ultrapassa 100%, ocorre uma Explosão de Vazamento.
-A explosão é registrada e o medidor continua a partir do excedente.
+Quando uma guilda atinge ou ultrapassa 100%, ela é eliminada da partida.
+O medidor trava em 100% e o líder não pode mais responder ou usar poderes.
 
 Exemplo:
 
@@ -250,9 +250,9 @@ Exemplo:
 
 Resultado:
 
-- 1 Explosão de Vazamento;
-- Medidor atual em 15%;
-- Vazamento Final acumulado de 115%.
+- Game Over para a guilda;
+- Medidor travado em 100%;
+- Participação do líder encerrada.
 
 ### 11.1. Cálculo do Vazamento Final
 
@@ -601,6 +601,6 @@ alteradas durante a revisão:
 5. Uma guilda sem resposta recebe penalidade maior do que uma resposta `0%`.
 6. O Bruxo pode revelar uma dica em qualquer pergunta.
 7. O poder do Anão pode ser usado em `Portão de Acesso` ou `Cerco ao GTA VI`.
-8. O medidor registra explosões a cada `100%` e preserva o excedente.
+8. Uma guilda é eliminada quando seu medidor de vazamento atinge `100%`.
 9. O sistema não possui botão para reiniciar uma partida.
 10. O sistema não oferece reconexão pela tela inicial.
