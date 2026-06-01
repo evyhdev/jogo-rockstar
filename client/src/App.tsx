@@ -31,11 +31,21 @@ function Home() {
   const navigate = useNavigate();
   const [room, setRoom] = useState("");
   const [leader, setLeader] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [joinError, setJoinError] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
   const createRoom = async () => {
-    const gameId = Math.random().toString(36).slice(2, 7).toUpperCase();
-    await gameStore.create(createGame(gameId));
-    navigate(`/mestre/${gameId}`);
+    try {
+      setCreating(true);
+      setCreateError(null);
+      const gameId = Math.random().toString(36).slice(2, 7).toUpperCase();
+      await gameStore.create(createGame(gameId));
+      navigate(`/mestre/${gameId}`);
+    } catch (cause) {
+      setCreateError(cause instanceof Error ? cause.message : "Não foi possível criar a sala.");
+    } finally {
+      setCreating(false);
+    }
   };
   const joinRoom = async () => {
     try {
@@ -51,12 +61,12 @@ function Home() {
       });
       localStorage.setItem(`rockstar-team:${gameId}`, teamId);
       navigate(`/jogador/${gameId}/${teamId}`);
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "Não foi possível entrar."); }
+    } catch (cause) { setJoinError(cause instanceof Error ? cause.message : "Não foi possível entrar."); }
   };
   return <main className="home-screen"><div className="home-content">
     <div className="grid gap-6 lg:grid-cols-[1.12fr_0.88fr]">
-      <section className="home-hero"><div><p className="eyebrow">Operação Rockstar</p><h1>Protocolo Seguro</h1><p className="home-lead">Uma missão estratégica sobre COBIT, ITIL e segurança da informação. Proteja os dados sigilosos do reino antes que o vazamento chegue a 100%.</p><div className="home-highlights"><span>5 guildas</span><span>8 desafios</span><span>60s por rodada</span><span>1 poder por guilda</span></div></div><button className={`${button} home-master-button`} onClick={createRoom}>Criar sala como mestre</button></section>
-      <section className="home-entry"><p className="eyebrow text-cyan-300">Entrada dos líderes</p><h2>Acessar pelo celular</h2><p>Use o código exibido pelo mestre e informe seu nome para representar uma guilda.</p><div className="mt-6 grid gap-4"><input className="home-input uppercase" placeholder="Código da sala" value={room} onChange={(event) => setRoom(event.target.value)} /><input className="home-input" placeholder="Nome do líder" value={leader} onChange={(event) => setLeader(event.target.value)} /><button className={`${button} bg-cyan-500 text-slate-950`} onClick={joinRoom}>Entrar na operação</button><ErrorMessage message={error} /></div></section>
+      <section className="home-hero"><div><p className="eyebrow">Operação Rockstar</p><h1>Protocolo Seguro</h1><p className="home-lead">Uma missão estratégica sobre COBIT, ITIL e segurança da informação. Proteja os dados sigilosos do reino antes que o vazamento chegue a 100%.</p><div className="home-highlights"><span>5 guildas</span><span>8 desafios</span><span>60s por rodada</span><span>1 poder por guilda</span></div></div><button className={`${button} home-master-button`} disabled={creating} onClick={createRoom}>{creating ? "Criando sala..." : "Criar sala como mestre"}</button><ErrorMessage message={createError} /></section>
+      <section className="home-entry"><p className="eyebrow text-cyan-300">Entrada dos líderes</p><h2>Acessar pelo celular</h2><p>Use o código exibido pelo mestre e informe seu nome para representar uma guilda.</p><div className="mt-6 grid gap-4"><input className="home-input uppercase" placeholder="Código da sala" value={room} onChange={(event) => setRoom(event.target.value)} /><input className="home-input" placeholder="Nome do líder" value={leader} onChange={(event) => setLeader(event.target.value)} /><button className={`${button} bg-cyan-500 text-slate-950`} onClick={joinRoom}>Entrar na operação</button><ErrorMessage message={joinError} /></div></section>
     </div>
     <section className="home-rules"><div className="home-section-heading"><p className="eyebrow">Manual de campo</p><h2>Como funciona a operação</h2><p>O mestre conduz o jogo no datashow. Cada líder participa pelo próprio celular.</p></div><div className="home-rule-grid">
       <article className="home-rule-card"><b>01</b><h3>Prepare a guilda</h3><p>Entre na sala, jogue o dado e escolha um personagem quando chegar sua vez.</p></article>
