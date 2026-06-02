@@ -99,7 +99,7 @@ de conflito, o sistema tenta novamente até cinco vezes.
     ├── package.json
     ├── vite.config.ts
     ├── public/assets/houses/
-    │   └── 1.png ... 10.png
+    │   └── 1.webp ... 10.webp
     └── src/
         ├── App.tsx
         ├── main.tsx

@@ -104,12 +104,25 @@ export const gameStore = {
 
   subscribe(gameId: string, callback: (state: GameState | null) => void) {
     let active = true;
+    let refreshing = false;
+    let lastSerializedState: string | null = null;
     const refresh = async () => {
+      if (refreshing) return;
+      refreshing = true;
       try {
         const state = await gameStore.get(gameId);
-        if (active) callback(state);
+        const serializedState = JSON.stringify(state);
+        if (active && serializedState !== lastSerializedState) {
+          lastSerializedState = serializedState;
+          callback(state);
+        }
       } catch {
-        if (active) callback(null);
+        if (active && lastSerializedState !== "null") {
+          lastSerializedState = "null";
+          callback(null);
+        }
+      } finally {
+        refreshing = false;
       }
     };
     void refresh();

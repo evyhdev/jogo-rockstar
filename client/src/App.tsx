@@ -185,7 +185,7 @@ function HeroGallery({ game }: { game: GameState }) {
   const teams = getTeams(game);
   return <div className="hero-gallery">{characters.map((character) => {
     const selectedBy = teams.find((team) => team.characterId === character.id);
-    const imageName = encodeURIComponent(`Herói - ${character.name}.png`);
+    const imageName = encodeURIComponent(`Herói - ${character.name}.webp`);
     return <article className={`hero-gallery-card ${selectedBy ? "is-selected" : ""}`} key={character.id}><img src={`/assets/herois/${imageName}`} alt={`Descrição do personagem ${character.name}`} />{selectedBy ? <div className="hero-gallery-status"><b>Escolhido</b><span>{selectedBy.name}</span></div> : <div className="hero-gallery-status is-available"><b>Disponível</b><span>{character.name}</span></div>}</article>;
   })}</div>;
 }
